@@ -19,6 +19,10 @@
       </div>
     </div>
     <script src="js/jquery.js"></script>
+
+    <!-- SE GENERARÁ EL SCRIPT PARA GENERAR AL USUARIO DEL SISTEMA (email:maria@mail, usuario:mc, pw=123) -->
+    <script src="js/crea_usuario.js"></script>
+
     <script>
         var nombreUsuario = $('#user')
         var pass = $('#pass')
@@ -27,6 +31,9 @@
                 $.post('/login',{user: nombreUsuario.val(), pass: pass.val()}, function(response) {
                     if (response == "Validado") {
                         window.location.href = "http://localhost:3000/main.html"
+                    }
+                    else{
+                      alert(response);
                     }
                 })
             } else {
