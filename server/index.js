@@ -28,7 +28,7 @@ app.use(session({ //Iniciar modulo de manejo de sesiones
 
 app.use(express.static('client'));
 app.use('/',RoutingUsuarios);
-app.use('/',RoutingEventos);
+app.use('/events',RoutingEventos);
 
 Server.listen(PORT,()=>{
   console.log('Servidor escuchando en puerto: '+PORT);

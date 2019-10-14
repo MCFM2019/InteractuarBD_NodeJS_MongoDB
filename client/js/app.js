@@ -15,9 +15,10 @@ class EventManager {
     }
 
     eliminarEvento(evento) {
-        let eventId = evento.id
+        let eventId = evento._id
         $.post('/events/delete/'+eventId, {id: eventId}, (response) => {
-            alert(response)
+          $('.calendario').fullCalendar('removeEvents', eventId);
+          alert(response)
         })
     }
 
@@ -35,8 +36,8 @@ class EventManager {
                 end = $('#end_date').val()
                 start_hour = $('#start_hour').val()
                 end_hour = $('#end_hour').val()
-                start = start + 'T' + start_hour
-                end = end + 'T' + end_hour
+                start = start //+ 'T' + start_hour
+                end = end //+ 'T' + end_hour
             }
             let url = this.urlBase + "/new"
             if (title != "" && start != "") {
@@ -46,9 +47,16 @@ class EventManager {
                     end: end
                 }
                 $.post(url, ev, (response) => {
-                    alert(response)
+                  var newEvent = {
+                      _id:response,
+                      title: title,
+                      start: start,
+                      end: end
+                  }
+                  $('.calendario').fullCalendar('renderEvent', newEvent)
+                  alert(response)
                 })
-                $('.calendario').fullCalendar('renderEvent', ev)
+
             } else {
                 alert("Complete los campos obligatorios para el evento")
             }
@@ -87,7 +95,7 @@ class EventManager {
                 center: 'title',
                 right: 'month,agendaWeek,basicDay'
             },
-            defaultDate: '2016-11-01',
+            defaultDate: '2019-10-01',
             navLinks: true,
             editable: true,
             eventLimit: true,
@@ -99,7 +107,7 @@ class EventManager {
             },
             events: eventos,
             eventDragStart: (event,jsEvent) => {
-                $('.delete').find('img').attr('src', "img/trash-open.png");
+                $('.delete').find('img').attr('src', "../img/trash-open.png");
                 $('.delete').css('background-color', '#a70f19')
             },
             eventDragStop: (event,jsEvent) => {
@@ -116,6 +124,31 @@ class EventManager {
                     }
                 }
             })
+        }
+
+        actualizarEvento(evento) {
+
+          if(evento.end === null){ //Verificar si el evento es de dia completo
+            var start = moment(evento.start).format('YYYY-MM-DD'), //Enviar la información del día en formato año-mes-dia
+                url = '/events/update/'+evento._id+'&'+start+'&'+start //enviar como parámetros el identificador del evento + lafecha de inicio + la fecha de inicio ya que no se pueden enviar parámetros vacíos
+          }else{
+            var start = moment(evento.start).format('YYYY-MM-DD HH:mm:ss'), //Enviar la información del día en formato año-mes-dia Hora-minuto-segundos
+                end = moment(evento.end).format('YYYY-MM-DD HH:mm:ss'), //Enviar la información del día en formato año-mes-dia Hora-minuto-segundos
+                url = '/events/update/'+evento._id+'&'+start+'&'+end //enviar como parámetros el identificador del evento + lafecha de inicio + la fecha de finalización del evento
+          }
+
+            var  data = { //Crear objero data
+                  id: evento._id, //asignar e idenificador del evento obtenido
+                  start: start, //obtener la fecha inicial
+                  end: end //obtener la fecha final
+              }
+              $.post(url, data, (response) => { //Enviar la consulta AJAX
+                  if(response == "logout" ){//Verificar que la respuesta no sea logout (Usuario no ha iniciado sesion)
+                    this.sessionError() //Ejecutar función de error de sesión
+                  }else{
+                    alert(response) //Mostrar mensaje recibido
+                  }
+              })
         }
     }
 
