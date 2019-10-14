@@ -120,14 +120,14 @@ class EventManager {
                 if (jsEvent.pageX >= x1 && jsEvent.pageX<= x2 &&
                     jsEvent.pageY >= y1 && jsEvent.pageY <= y2) {
                         this.eliminarEvento(event)
-                        $('.calendario').fullCalendar('removeEvents', event.id);
+                        // $('.calendario').fullCalendar('removeEvents', event.id);
                     }
+                    $('.delete').find('img').attr('src', "../img/trash.png");
                 }
             })
         }
 
         actualizarEvento(evento) {
-
           if(evento.end === null){ //Verificar si el evento es de dia completo
             var start = moment(evento.start).format('YYYY-MM-DD'), //Enviar la información del día en formato año-mes-dia
                 url = '/events/update/'+evento._id+'&'+start+'&'+start //enviar como parámetros el identificador del evento + lafecha de inicio + la fecha de inicio ya que no se pueden enviar parámetros vacíos
